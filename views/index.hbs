@@ -1,0 +1,19 @@
+<h1>{{title}}</h1>
+<p>Welcome to {{title}}</p>
+
+<h2>Recent Questions</h2>
+{{#if recentQuestions.length}}
+  <ul class="question-list">
+    {{#each recentQuestions}}
+      <li>
+        <h3><a href="/questions/{{this._id}}">{{this.title}}</a></h3>
+        <p>{{{this.content}}}</p>
+        <small>Posted on: {{formatDate this.createdAt}}</small>
+        <br>
+        <small>By: {{#if this.author}}{{this.author.username}}{{else}}Anonymous{{/if}}</small>
+      </li>
+    {{/each}}
+  </ul>
+{{else}}
+  <p>No questions yet. <a href="/questions/new">Ask the first one!</a></p>
+{{/if}}

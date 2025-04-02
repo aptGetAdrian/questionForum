@@ -1,0 +1,6 @@
+<h1>Edit Question</h1>
+<form action="/questions/{{question._id}}?_method=PUT" method="POST">
+    <input type="text" name="title" value="{{question.title}}" required>
+    <textarea name="content" required>{{question.content}}</textarea>
+    <button type="submit">Update</button>
+</form>

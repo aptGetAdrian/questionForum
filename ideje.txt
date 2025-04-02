@@ -1,0 +1,9 @@
+- za deleton vprašanj naredi na account stats list vprašanj in zraven button za deletion
+    - spodi pod vrstico s statsi pa profilno naredi list uporabnikovih vprašanj
+    - enako naredi za odgovore. mej dva seznama, enega poleg drugega. dva stolpca
+
+- za pisanje odgovorov pod vprašanji naredi eno okence, ki je grayed out, če nesi prijavleni
+
+- za sprejemanje pravilnih odgovorov naredi v bazi za vprašanja en boolean, ki je true, če ma
+vprašanje pravilni odgovor. ko postavitelj vprašanja postavi pravilni odgovor, se to da na true.
+

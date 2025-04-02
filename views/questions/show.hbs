@@ -1,0 +1,11 @@
+<h1>{{question.title}}</h1>
+<p>{{{question.content}}}</p>
+
+<p>isOwner: {{isOwner}}</p>
+
+{{#if isOwner}}
+    <form method="POST" action="/questions/{{question._id}}?_method=DELETE">
+        <button type="submit">Delete Question</button>
+    </form>
+    <a href="/questions/{{question._id}}/edit">Edit</a>
+{{/if}}

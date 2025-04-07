@@ -1,5 +1,6 @@
-const Question = require('../models/questionsModel.js'); // Assuming you have a Question model
+const Question = require('../models/questionsModel.js'); 
 const marked = require('marked');
+const Comment = require('../models/commentsModel.js');
 
 module.exports = {
     
@@ -15,6 +16,7 @@ module.exports = {
     show: async (req, res, next) => {
         try {
             const question = await Question.findById(req.params.id).lean();
+            const comments = await Comment.find({ question: req.params.id }).populate('author').lean();
             if (!question) return res.status(404).send('Question not found');
         
             let isOwner = false;
@@ -25,8 +27,10 @@ module.exports = {
             res.render('questions/show', {
               question,
               isOwner,
+              comments,
               session: req.session
             });
+
           } catch (err) {
             next(err);
           }
@@ -112,5 +116,41 @@ module.exports = {
         } catch (err) {
         res.status(500).send(err.message);
         }
-    }
+    },
+
+    acceptAnswer: async (req, res) => {
+        try {
+            const { questionId, answerId } = req.params;
+            const userId = req.session.userId; 
+
+            const answer = await Comment.findById(answerId);
+            if (!answer || answer.question.toString() !== questionId) {
+                return res.status(400).json({ error: "Answer does not belong to this question." });
+            }
+
+            const question = await Question.findById(questionId);
+            if (!question) {
+                return res.status(404).json({ error: "Question not found." });
+            }
+            if (question.author.toString() !== userId) {
+                return res.status(403).json({ error: "Only the question author can accept answers." });
+            }
+
+            if (question.acceptedAnswer) {
+                await Comment.findByIdAndUpdate(question.acceptedAnswer, { isAccepted: false });
+            }
+
+            await Comment.findByIdAndUpdate(answerId, { isAccepted: true });
+
+
+            question.acceptedAnswer = answerId;
+            await question.save();
+
+
+            res.redirect(`/questions/${questionId}`);
+            //res.status(200).json({ message: "Answer accepted successfully.", acceptedAnswer: answerId });
+        } catch (err) {
+            res.status(500).json({ error: "Server error: " + err.message });
+        }
+    },
 };

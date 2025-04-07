@@ -4,8 +4,75 @@
 <p>isOwner: {{isOwner}}</p>
 
 {{#if isOwner}}
-    <form method="POST" action="/questions/{{question._id}}?_method=DELETE">
-        <button type="submit">Delete Question</button>
-    </form>
-    <a href="/questions/{{question._id}}/edit">Edit</a>
+<form method="POST" action="/questions/{{question._id}}?_method=DELETE">
+    <button type="submit">Delete Question</button>
+</form>
+<a href="/questions/{{question._id}}/edit">Edit</a>
 {{/if}}
+
+{{#if session.userId}}
+<br><br>
+Napiši komentar:
+<form action="/comments/{{question._id}}" method="post">
+    <textarea name="content" placeholder="Your question (supports **bold**, _italics_, etc.)" required></textarea>
+    <small>Supports Markdown: **bold**, _italic_, `code`, lists.</small>
+    <button type="submit">Submit</button>
+</form>
+{{/if}}
+
+<br><br>
+<ul>
+{{#each comments}}
+<li>
+    <p>{{{this.author.username}}}</p>
+    <p>{{formatDate this.createdAt}}</p>
+
+    <!-- Voting buttons -->
+    <div class="voting-container" style="display: flex; align-items: center; gap: 5px; margin: 10px 0;">
+        {{#if ../session.userId}}
+            <form method="POST" action="/comments/{{this._id}}/upvote/{{../question._id}}">
+                <button type="submit" class="vote-btn" style="color: green;">
+                    ↑
+                </button>
+            </form>
+            
+            <span class="vote-score" style="font-weight: bold; min-width: 20px; text-align: center;">
+                {{this.score}}
+            </span>
+            
+            <form method="POST" action="/comments/{{this._id}}/downvote/{{../question._id}}">
+                <button type="submit" class="vote-btn" style="color: red;">
+                    ↓
+                </button>
+            </form>
+        {{else}}
+            <button disabled>↑</button>
+            <span style="font-weight: bold; min-width: 20px; text-align: center;">
+                {{this.score}}
+            </span>
+            <button disabled>↓</button>
+        {{/if}}
+    </div>
+    
+    <!-- Show acceptance status -->
+    {{#if this.isAccepted}}
+        <p style="color: green;">✓ Accepted Answer</p>
+    {{/if}}
+    
+    <p>{{{this.content}}}</p>
+    
+    <!-- Accept Answer Button (only shown to question owner) -->
+    {{#if ../isOwner}}
+        <form method="POST" action="/questions/{{../question._id}}/accept/{{this._id}}?_method=PUT">
+            <button 
+                type="submit"
+                {{#if this.isAccepted}}disabled style="background-color: #4CAF50;"{{/if}}
+            >
+                {{#if this.isAccepted}}✓ Accepted{{else}}Accept Answer{{/if}}
+            </button>
+        </form>
+    {{/if}}
+    <br><br>
+</li>
+{{/each}}
+</ul>

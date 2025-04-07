@@ -33,4 +33,6 @@ router.put('/:id', requiresLogin, questionsController.update);
 // DELETE question
 router.delete('/:id', requiresLogin, questionsController.remove);
 
+router.put('/:questionId/accept/:answerId', requiresLogin, questionsController.acceptAnswer);
+
 module.exports = router;

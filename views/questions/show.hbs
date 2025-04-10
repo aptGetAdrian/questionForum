@@ -1,3 +1,4 @@
+
 <h1>{{question.title}}</h1>
 <p>{{{question.content}}}</p>
 
@@ -22,57 +23,63 @@ Napiši komentar:
 
 <br><br>
 <ul>
-{{#each comments}}
-<li>
-    <p>{{{this.author.username}}}</p>
-    <p>{{formatDate this.createdAt}}</p>
+    {{#each comments}}
+    <li id="comment-{{this._id}}">
+        <p>{{{this.author.username}}}</p>
+        <p>{{formatDate this.createdAt}}</p>
+        <p>{{{this.content}}}</p>
 
-    <!-- Voting buttons -->
-    <div class="voting-container" style="display: flex; align-items: center; gap: 5px; margin: 10px 0;">
-        {{#if ../session.userId}}
-            <form method="POST" action="/comments/{{this._id}}/upvote/{{../question._id}}">
-                <button type="submit" class="vote-btn" style="color: green;">
-                    ↑
-                </button>
-            </form>
-            
-            <span class="vote-score" style="font-weight: bold; min-width: 20px; text-align: center;">
+        <!-- Voting buttons -->
+        <div class="voting-container" style="display: flex; align-items: center; gap: 5px; margin: 10px 0;">
+            {{#if ../session.userId}}
+            <button class="vote-btn {{#if (eq this.userVote 1)}}voted-up{{/if}}" data-comment-id="{{this._id}}"
+                data-user-id="{{../session.userId}}" data-vote-type="upvote" style="color: green;">
+                ↑
+            </button>
+
+            <span class="vote-score" id="score-{{this._id}}"
+                style="font-weight: bold; min-width: 20px; text-align: center;">
                 {{this.score}}
             </span>
-            
-            <form method="POST" action="/comments/{{this._id}}/downvote/{{../question._id}}">
-                <button type="submit" class="vote-btn" style="color: red;">
-                    ↓
-                </button>
-            </form>
-        {{else}}
+
+            <button class="vote-btn {{#if (eq this.userVote -1)}}voted-down{{/if}}" data-comment-id="{{this._id}}"
+                data-user-id="{{../session.userId}}" data-vote-type="downvote" style="color: red;">
+                ↓
+            </button>
+            {{else}}
             <button disabled>↑</button>
             <span style="font-weight: bold; min-width: 20px; text-align: center;">
                 {{this.score}}
             </span>
             <button disabled>↓</button>
-        {{/if}}
-    </div>
-    
-    <!-- Show acceptance status -->
-    {{#if this.isAccepted}}
+            {{/if}}
+        </div>
+
+        <!-- Show acceptance status -->
+        {{#if this.isAccepted}}
         <p style="color: green;">✓ Accepted Answer</p>
-    {{/if}}
-    
-    <p>{{{this.content}}}</p>
-    
-    <!-- Accept Answer Button (only shown to question owner) -->
-    {{#if ../isOwner}}
+        {{/if}}
+
+        <!-- Accept Answer Button (only shown to question owner) -->
+        {{#if ../isOwner}}
         <form method="POST" action="/questions/{{../question._id}}/accept/{{this._id}}?_method=PUT">
-            <button 
-                type="submit"
-                {{#if this.isAccepted}}disabled style="background-color: #4CAF50;"{{/if}}
-            >
+            <button type="submit" {{#if this.isAccepted}}disabled style="background-color: #4CAF50;" {{/if}}>
                 {{#if this.isAccepted}}✓ Accepted{{else}}Accept Answer{{/if}}
             </button>
         </form>
-    {{/if}}
-    <br><br>
-</li>
-{{/each}}
+        {{/if}}
+
+        <!-- Edit/Delete Buttons (only shown to comment owner) -->
+        {{#if this.isCommentOwner}}
+        <button class="delete-btn" data-comment-id="{{this._id}}">Delete Comment</button><br>
+        <a href="/comments/{{this._id}}/edit">Edit</a>
+        {{/if}}
+
+        <br><br>
+    </li>
+    {{/each}}
 </ul>
+
+
+<script src="/javascripts/voting.js"></script>
+<script src="/javascripts/deleteComment.js"></script>

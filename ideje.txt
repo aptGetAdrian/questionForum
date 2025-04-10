@@ -7,3 +7,6 @@
 - za sprejemanje pravilnih odgovorov naredi v bazi za vprašanja en boolean, ki je true, če ma
 vprašanje pravilni odgovor. ko postavitelj vprašanja postavi pravilni odgovor, se to da na true.
 
+
+ko deletnes vprašanje, se nej deletnejo vsi komentarji
+

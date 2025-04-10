@@ -22,9 +22,11 @@ function requiresLogin(req, res, next){
 router.post('/:id', requiresLogin, commentsController.create);
 
 //POST score
-router.post('/:id/downvote/:id2', requiresLogin, commentsController.downvote);
-router.post('/:id/upvote/:id2', requiresLogin, commentsController.upvote);
+router.post('/:id/downvote/:id3', requiresLogin, commentsController.downvote);
+router.post('/:id/upvote/:id3', requiresLogin, commentsController.upvote);
 
+//POST create new comment
+router.delete('/:id', requiresLogin, commentsController.deleteIndividual);
 
 //
 //// GET edit form for question

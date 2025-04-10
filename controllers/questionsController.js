@@ -15,25 +15,61 @@ module.exports = {
     
     show: async (req, res, next) => {
         try {
-            const question = await Question.findById(req.params.id).lean();
-            const comments = await Comment.find({ question: req.params.id }).populate('author').lean();
-            if (!question) return res.status(404).send('Question not found');
-        
-            let isOwner = false;
-            if (req.session.userId && question.author) {
-              isOwner = req.session.userId.toString() === question.author.toString();
-            }
-        
-            res.render('questions/show', {
-              question,
-              isOwner,
-              comments,
-              session: req.session
-            });
-
-          } catch (err) {
-            next(err);
+          const question = await Question.findById(req.params.id).lean();
+          const comments = await Comment.find({ question: req.params.id }).populate('author').lean();
+      
+          if (!question) return res.status(404).send('Question not found');
+      
+          let isOwner = false;
+          if (req.session.userId && question.author) {
+            isOwner = req.session.userId.toString() === question.author.toString();
           }
+      
+          // Add isCommentOwner property and userVote to each comment
+          const enhancedComments = comments.map(comment => {
+            const isCommentOwner =
+              req.session.userId &&
+              comment.author &&
+              comment.author._id.toString() === req.session.userId.toString();
+          
+            let userVote = 0; // Default: no vote
+            if (req.session.userId && comment.voters) {
+              // Ensure comment.voters exists before calling .find()
+              const voter = comment.voters.find(v =>
+                v.userId && v.userId.toString() === req.session.userId.toString()
+              );
+              if (voter) {
+                userVote = voter.vote; // 1 for upvote, -1 for downvote
+              }
+            }
+            
+            // Add isAccepted flag to the comment
+            const isAccepted = question.acceptedAnswer && 
+                              question.acceptedAnswer.toString() === comment._id.toString();
+            
+            return { ...comment, isCommentOwner, userVote, isAccepted };
+          });
+    
+          // Sort comments: accepted answer first, then by score (highest to lowest)
+          const sortedComments = enhancedComments.sort((a, b) => {
+            // If one is accepted and the other isn't, the accepted one comes first
+            if (a.isAccepted && !b.isAccepted) return -1;
+            if (!a.isAccepted && b.isAccepted) return 1;
+            
+            // Otherwise sort by score (highest first)
+            return (a.createdAt || 0) - (b.createdAt || 0);
+          });
+          
+          res.render('questions/show', {
+            question,
+            isOwner,
+            comments: sortedComments,
+            session: req.session
+          });
+      
+        } catch (err) {
+          next(err);
+        }
     },
 
     showCreateForm: function(req, res){

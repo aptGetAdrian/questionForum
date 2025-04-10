@@ -3,6 +3,14 @@
 <h3>{{user.username}}</h3>
 <h2>Mail:</h2>
 <h3>{{user.email}}</h3>
+
+<h2>Profile Picture</h2>
+<img src="{{user.profilePicture}}" alt="Profile Picture" width="150">
+<form action="/users/setPicture" method="POST" enctype="multipart/form-data">
+    <input type="file" name="profilePicture" accept="image/*" required>
+    <button type="submit">Upload</button>
+</form>
+
 <br><a type="button" href="logout">Odjava </a>
 
 <h2>Questions:</h2>

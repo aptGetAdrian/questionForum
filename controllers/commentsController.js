@@ -31,19 +31,104 @@ module.exports = {
     },
 
 
-    downvote: async (req, res) => {
+    upvote: async (req, res) => {
+        const { id: commentId, id3: userId } = req.params;
+    
         try {
-            if (!req.session.userId) {
-                return res.redirect('/users/login');
+            const comment = await Comment.findById(commentId);
+            const voter = comment.voters.find(v => v.userId.equals(userId));
+            let userVote = 0; // Default value
+    
+            if (!voter) {
+                comment.voters.push({ userId, vote: 1 });
+                comment.score += 1;
+                userVote = 1;
+            } else if (voter.vote === 1) {
+                voter.vote = 0;
+                comment.score -= 1;
+                userVote = 0;
+            } else if (voter.vote === -1) {
+                voter.vote = 1;
+                comment.score += 2;
+                userVote = 1;
+            } else {
+                voter.vote = 1;
+                comment.score += 1;
+                userVote = 1;
             }
+    
+            await comment.save();
+    
+            if (req.xhr) {
+                return res.json({ 
+                    score: comment.score,
+                    userVote: userVote // Add the user's current vote status
+                });
+            } else {
+                return res.redirect('back');
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Server Error');
+        }
+    },
+    
 
-            const commentId = req.params.id;
+    downvote: async (req, res) => {
+        const { id: commentId, id3: userId } = req.params;
+    
+        try {
+            const comment = await Comment.findById(commentId);
+            const voter = comment.voters.find(v => v.userId.equals(userId));
+            let userVote = 0; // Default value
+    
+            if (!voter) {
+                // User hasn't voted yet; add a downvote
+                comment.voters.push({ userId, vote: -1 });
+                comment.score -= 1;
+                userVote = -1;
+            } else if (voter.vote === -1) {
+                voter.vote = 0;
+                comment.score += 1;
+                userVote = 0;
+            } else if (voter.vote === 1) {
+                voter.vote = -1;
+                comment.score -= 2;
+                userVote = -1;
+            } else {
+                voter.vote = -1;
+                comment.score -= 1;
+                userVote = -1;
+            }
+    
+            await comment.save();
+    
+            // Check if the request is an AJAX request
+            if (req.xhr) {
+                return res.json({ 
+                    score: comment.score,
+                    userVote: userVote // Add the user's current vote status
+                });
+            } else {
+                return res.redirect('back');
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Server Error');
+        }
+    },
 
-
-        } catch (err) {
-            return res.redirect(`/questions/${req.params.id}?error=${encodeURIComponent(err.message)}`);
+    deleteIndividual: async (req, res) => {
+        try {
+            await Comment.findByIdAndDelete(req.params.id);
+            res.status(200).json({ message: 'Comment deleted successfully' });
+        } catch (error) {
+            res.status(500).json({ error: 'An error occurred while deleting the comment' });
         }
 
-
     }
+
+
+
+
 };

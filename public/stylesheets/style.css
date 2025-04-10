@@ -16,3 +16,16 @@ nav ul{
 nav ul li a{
   text-decoration: none;
 }
+
+
+.voted-up {
+  background-color: #d4edda; /* Light green background */
+  border: 1px solid #28a745; /* Green border */
+  color: #155724; /* Dark green text */
+}
+
+.voted-down {
+  background-color: #f8d7da; /* Light red background */
+  border: 1px solid #dc3545; /* Red border */
+  color: #721c24; /* Dark red text */
+}

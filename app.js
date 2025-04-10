@@ -44,6 +44,10 @@ hbs.registerHelper('formatDate', function(date) {
   });
 });
 
+hbs.registerHelper('eq', function(a, b) {
+  return a === b;
+});
+
 /**
  * Vključimo session in connect-mongo.
  * Connect-mongo skrbi, da se session hrani v bazi.

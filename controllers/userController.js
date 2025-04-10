@@ -1,5 +1,6 @@
 var UserModel = require('../models/userModel.js');
 const Question = require('../models/questionsModel.js');
+const upload = require('../public/javascripts/upload.js');
 
 /**
  * userController.js
@@ -142,12 +143,12 @@ module.exports = {
                 return next(err);
             }
             req.session.userId = user._id;
-            res.redirect('/users/profile');
+            res.redirect('/users/userProfile');
         });
     },
 
 
-    profile: async function(req, res, next) { 
+    userProfile: async function(req, res, next) { 
         try {
             const questions = await Question.find({ author: req.session.userId }).exec();  
             const user = await UserModel.findById(req.session.userId).exec();
@@ -158,7 +159,7 @@ module.exports = {
                 return next(err);
             }
     
-            return res.render('user/profile', { 
+            return res.render('user/userProfile', { 
                 user,
                 questions  
             });
@@ -166,7 +167,7 @@ module.exports = {
             return next(error);
         }
     },
-    
+
 
     logout: function(req, res, next){
         if(req.session){
@@ -178,5 +179,37 @@ module.exports = {
                 }
             });
         }
+    },
+    
+
+    setPicture: async(req, res) => {
+        upload(req, res, async (err) => {
+            if (err) {
+                console.error('Upload error:', err);
+                return res.status(400).send(err.message);
+            }
+            
+            if (!req.file) {
+                return res.status(400).send('No file uploaded');
+            }
+            
+            try {
+                const relativePath = '/images/' + req.file.filename;
+                
+                await UserModel.findByIdAndUpdate(
+                    req.session.userId, 
+                    { profilePicture: relativePath }
+                );
+                
+                res.redirect('/users/userProfile');
+            } catch (error) {
+                console.error('Full error:', error);
+                res.status(500).send('Error updating profile picture: ' + error.message);
+            }
+        });
     }
+
+
+
+
 };

@@ -6,7 +6,7 @@ var userSchema = new Schema({
 	username: { type: String, required: true },
 	password: { type: String, required: true },
 	email: { type: String, required: true },
-	profilePicture: { type: String, default: '' }
+	profilePicture: { type: String, default: "/images/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg" }
 });
 
 userSchema.pre('save', function(next){

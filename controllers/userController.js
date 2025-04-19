@@ -1,6 +1,8 @@
 var UserModel = require('../models/userModel.js');
 const Question = require('../models/questionsModel.js');
 const upload = require('../public/javascripts/upload.js');
+const Comment = require('../models/commentsModel.js');
+const commentsModel = require('../models/commentsModel.js');
 
 /**
  * userController.js
@@ -150,8 +152,16 @@ module.exports = {
 
     userProfile: async function(req, res, next) { 
         try {
-            const questions = await Question.find({ author: req.session.userId }).exec();  
-            const user = await UserModel.findById(req.session.userId).exec();
+            const questions = await Question.find({ author: req.session.userId }).lean();  
+            const user = await UserModel.findById(req.session.userId).lean();
+            const numComments = await Comment.countDocuments({ author: req.session.userId });
+            const numQuestions = await Question.countDocuments({ author: req.session.userId });
+            const numAcceptedComments = await Comment.countDocuments({ author: req.session.userId, isAccepted: true });
+
+            const comments = await Comment.find({ author: req.session.userId }).lean();
+            const totalScore = comments.reduce((sum, comment) => sum + (comment.score || 0), 0);
+            const averageScore = totalScore / numComments;
+            
     
             if (!user) {
                 const err = new Error('Not authorized, go back!');
@@ -161,7 +171,12 @@ module.exports = {
     
             return res.render('user/userProfile', { 
                 user,
-                questions  
+                questions,
+                numComments,
+                numQuestions,
+                totalScore,
+                numAcceptedComments,
+                averageScore
             });
         } catch (error) {
             return next(error);

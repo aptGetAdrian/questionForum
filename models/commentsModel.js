@@ -13,7 +13,10 @@ const commentsSchema = new mongoose.Schema({
           vote: { type: Number, enum: [-1, 0, 1], default: 0 }
         }
       ],
-    isEdited: { type: Boolean, default: false }
+    isEdited: { type: Boolean, default: false },
+    subComments: [
+      { type: mongoose.Schema.Types.ObjectId, ref: 'subComment' }
+    ]
 });
 
 module.exports = mongoose.model('Comment', commentsSchema);

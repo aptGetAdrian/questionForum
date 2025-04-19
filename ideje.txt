@@ -8,5 +8,5 @@
 vprašanje pravilni odgovor. ko postavitelj vprašanja postavi pravilni odgovor, se to da na true.
 
 
-ko deletnes vprašanje, se nej deletnejo vsi komentarji
+naredi ajax za subKomentarje
 

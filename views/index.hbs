@@ -6,6 +6,7 @@
   <ul class="question-list">
     {{#each recentQuestions}}
       <li>
+        <img src="{{this.author.profilePicture}}" alt="Profile Picture" width="50">
         <h3><a href="/questions/{{this._id}}">{{this.title}}</a></h3>
         <p>{{{this.content}}}</p>
         <small>Posted on: {{formatDate this.createdAt}}</small>

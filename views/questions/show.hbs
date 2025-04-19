@@ -1,4 +1,4 @@
-
+<img src="{{questionAuthorProfilePicture}}" alt="Profile Picture" width="50">
 <h1>{{question.title}}</h1>
 <p>{{{question.content}}}</p>
 
@@ -25,6 +25,7 @@ Napiši komentar:
 <ul>
     {{#each comments}}
     <li id="comment-{{this._id}}">
+        <img src="{{this.profilePicture}}" alt="Profile Picture" width="50">
         <p>{{{this.author.username}}}</p>
         <p>{{formatDate this.createdAt}}</p>
         <p>{{{this.content}}}</p>
@@ -74,6 +75,27 @@ Napiši komentar:
         <button class="delete-btn" data-comment-id="{{this._id}}">Delete Comment</button><br>
         <a href="/comments/{{this._id}}/edit">Edit</a>
         {{/if}}
+
+        <br>
+        <!-- Sub-comment form -->
+        {{#if ../session.userId}}
+        <div style="margin-top: 10px; padding-left: 20px;">
+            <form action="/subComments/{{this._id}}/{{../question._id}}" method="post">
+                <textarea name="content" placeholder="Write a reply..." rows="2" required style="width: 90%;"></textarea>
+                <br>
+                <button type="submit" style="margin-top: 5px;">Reply</button>
+            </form>
+        </div>
+        {{/if}}
+
+        {{#each this.subComments}}
+            <div style="margin-left: 30px; padding: 5px; border-left: 2px solid #ccc;">
+                <img src="{{this.author.profilePicture}}" alt="Profile Picture" width="30">
+                <strong>{{this.author.username}}</strong>
+                <p>{{formatDate this.createdAt}}</p>
+                <p>{{{this.content}}}</p>
+            </div>
+        {{/each}}
 
         <br><br>
     </li>

@@ -20,6 +20,7 @@ var usersRouter = require('./routes/userRoutes');
 var photosRouter = require('./routes/photoRoutes');
 const questionsRouter = require('./routes/questionsRouter');
 const commentsRouter = require('./routes/commentsRouter');
+const subCommentsRouter = require('./routes/subCommentsRouter');
 
 var app = express();
 
@@ -73,6 +74,7 @@ app.use('/users', usersRouter);
 app.use('/photos', photosRouter);
 app.use('/questions', questionsRouter);
 app.use('/comments', commentsRouter);
+app.use('/subComments', subCommentsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

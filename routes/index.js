@@ -8,7 +8,7 @@ router.get('/', async function(req, res, next) {
     const recentQuestions = await Question.find()
       .sort({ createdAt: -1 })
       .limit(5)
-      .populate('author', 'username email') // Populate with username
+      .populate('author', 'username email profilePicture') // Populate with username
       .exec();
     
     res.render('index', { 

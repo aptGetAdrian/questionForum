@@ -1,13 +1,15 @@
 const Question = require('../models/questionsModel.js'); 
 const marked = require('marked');
 const Comment = require('../models/commentsModel.js');
+const subComment = require('../models/subCommentModel.js');
+var UserModel = require('../models/userModel.js');
 
 module.exports = {
     
     list: async (req, res) => {
         try {
         const questions = await Question.find();
-        res.render('questions/list', { questions });
+        res.render('questions/list', { questions, questionAuthorProfilePicture });
         } catch (err) {
         res.status(500).send(err.message);
         }
@@ -15,15 +17,27 @@ module.exports = {
     
     show: async (req, res, next) => {
         try {
-          const question = await Question.findById(req.params.id).lean();
-          const comments = await Comment.find({ question: req.params.id }).populate('author').lean();
+          const question = await Question.findById(req.params.id)
+            .populate('author', 'username profilePicture') // <-- populate author's username + profilePicture
+            .lean();
+      
+          const comments = await Comment.find({ question: req.params.id })
+            .populate('author', 'username profilePicture')
+            .populate({
+                path: 'subComments',
+                populate: { path: 'author', select: 'username profilePicture' }
+            })
+            .lean();
       
           if (!question) return res.status(404).send('Question not found');
       
           let isOwner = false;
           if (req.session.userId && question.author) {
-            isOwner = req.session.userId.toString() === question.author.toString();
+            isOwner = req.session.userId.toString() === question.author._id.toString(); // changed .author to .author._id
           }
+      
+          // Safely pull question author's profile picture
+          const questionAuthorProfilePicture = question.author?.profilePicture || '/images/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg'; 
       
           // Add isCommentOwner property and userVote to each comment
           const enhancedComments = comments.map(comment => {
@@ -31,10 +45,9 @@ module.exports = {
               req.session.userId &&
               comment.author &&
               comment.author._id.toString() === req.session.userId.toString();
-          
+      
             let userVote = 0; // Default: no vote
             if (req.session.userId && comment.voters) {
-              // Ensure comment.voters exists before calling .find()
               const voter = comment.voters.find(v =>
                 v.userId && v.userId.toString() === req.session.userId.toString()
               );
@@ -42,35 +55,36 @@ module.exports = {
                 userVote = voter.vote; // 1 for upvote, -1 for downvote
               }
             }
-            
+      
             // Add isAccepted flag to the comment
-            const isAccepted = question.acceptedAnswer && 
+            const isAccepted = question.acceptedAnswer &&
                               question.acceptedAnswer.toString() === comment._id.toString();
-            
-            return { ...comment, isCommentOwner, userVote, isAccepted };
+      
+            // Safely pull profilePicture from populated author
+            const profilePicture = comment.author?.profilePicture || '/images/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg';
+      
+            return { ...comment, isCommentOwner, userVote, isAccepted, profilePicture };
           });
-    
+      
           // Sort comments: accepted answer first, then by score (highest to lowest)
           const sortedComments = enhancedComments.sort((a, b) => {
-            // If one is accepted and the other isn't, the accepted one comes first
             if (a.isAccepted && !b.isAccepted) return -1;
             if (!a.isAccepted && b.isAccepted) return 1;
-            
-            // Otherwise sort by score (highest first)
             return (a.createdAt || 0) - (b.createdAt || 0);
           });
-          
+      
           res.render('questions/show', {
             question,
             isOwner,
             comments: sortedComments,
-            session: req.session
+            session: req.session,
+            questionAuthorProfilePicture // <-- pass to view
           });
       
         } catch (err) {
           next(err);
         }
-    },
+      },
 
     showCreateForm: function(req, res){
         if (!req.session.userId) {
@@ -148,6 +162,8 @@ module.exports = {
     remove: async (req, res) => {
         try {
         await Question.findByIdAndDelete(req.params.id);
+        await Comment.deleteMany({ question: req.params.id })
+        await subComment.deleteMany({ question: req.params.id })
         res.redirect('/');
         } catch (err) {
         res.status(500).send(err.message);

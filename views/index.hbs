@@ -1,20 +1,30 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+<div class="text-center mb-8">
+  <h1 class="text-4xl font-extrabold mb-2">{{title}}</h1>
+  <p class="text-lg text-gray-600">Welcome to {{title}}</p>
+</div>
 
-<h2>Recent Questions</h2>
-{{#if recentQuestions.length}}
-  <ul class="question-list">
-    {{#each recentQuestions}}
-      <li>
-        <img src="{{this.author.profilePicture}}" alt="Profile Picture" width="50">
-        <h3><a href="/questions/{{this._id}}">{{this.title}}</a></h3>
-        <p>{{{this.content}}}</p>
-        <small>Posted on: {{formatDate this.createdAt}}</small>
-        <br>
-        <small>By: {{#if this.author}}{{this.author.username}}{{else}}Anonymous{{/if}}</small>
-      </li>
-    {{/each}}
-  </ul>
-{{else}}
-  <p>No questions yet. <a href="/questions/new">Ask the first one!</a></p>
-{{/if}}
+<section>
+  <h2 class="text-2xl font-semibold mb-4">Recent Questions</h2>
+  {{#if recentQuestions.length}}
+    <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {{#each recentQuestions}}
+        <li class="bg-white rounded-2xl shadow p-5 hover:shadow-lg transition">
+          <!-- Wrap everything in the link and make it fill the li -->
+          <a href="/questions/{{this._id}}" class="block h-full">
+            <div class="flex items-center space-x-4 mb-4">
+              <img class="w-12 h-12 rounded-full" src="{{this.author.profilePicture}}" alt="Profile Picture">
+              <h3 class="text-xl font-medium hover:text-indigo-600">{{this.title}}</h3>
+            </div>
+            <p class="text-gray-700 mb-4">{{{this.content}}}</p>
+            <div class="text-sm text-gray-500">
+              <span>Posted on {{formatDate this.createdAt}}</span> •
+              <span>By {{#if this.author}}{{this.author.username}}{{else}}Anonymous{{/if}}</span>
+            </div>
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <p>No questions yet. <a href="/questions/new" class="text-indigo-600 hover:underline">Ask the first one!</a></p>
+  {{/if}}
+</section>

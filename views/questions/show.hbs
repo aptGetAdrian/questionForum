@@ -1,107 +1,99 @@
-<img src="{{questionAuthorProfilePicture}}" alt="Profile Picture" width="50">
-<h1>{{question.title}}</h1>
-<p>{{{question.content}}}</p>
+<article class="bg-white rounded-2xl shadow-md p-6 mb-8">
+  <div class="flex items-center space-x-4 mb-4">
+    <img class="w-12 h-12 rounded-full" src="{{questionAuthorProfilePicture}}" alt="Profile Picture">
+    <h1 class="text-3xl font-bold">{{question.title}}</h1>
+  </div>
+  <p class="text-gray-700 mb-4">{{{question.content}}}</p>
+  <p class="text-sm text-gray-500 mb-4">Posted on {{formatDate question.createdAt}}</p>
 
-<p>isOwner: {{isOwner}}</p>
+  {{#if isOwner}}
+    <div class="flex space-x-2 mb-6">
+      <form method="POST" action="/questions/{{question._id}}?_method=DELETE">
+        <button class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition" type="submit">Delete Question</button>
+      </form>
+      <a href="/questions/{{question._id}}/edit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Edit</a>
+    </div>
+  {{/if}}
 
-{{#if isOwner}}
-<form method="POST" action="/questions/{{question._id}}?_method=DELETE">
-    <button type="submit">Delete Question</button>
-</form>
-<a href="/questions/{{question._id}}/edit">Edit</a>
-{{/if}}
+  {{#if session.userId}}
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold mb-2">Write a Comment</h2>
+      <form action="/comments/{{question._id}}" method="post" class="space-y-2">
+        <textarea name="content" rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-200" placeholder="Your comment..." required></textarea>
+        <small class="text-gray-500">Supports Markdown</small>
+        <button class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition" type="submit">Submit</button>
+      </form>
+    </section>
+  {{/if}}
 
-{{#if session.userId}}
-<br><br>
-Napiši komentar:
-<form action="/comments/{{question._id}}" method="post">
-    <textarea name="content" placeholder="Your question (supports **bold**, _italics_, etc.)" required></textarea>
-    <small>Supports Markdown: **bold**, _italic_, `code`, lists.</small>
-    <button type="submit">Submit</button>
-</form>
-{{/if}}
-
-<br><br>
-<ul>
-    {{#each comments}}
-    <li id="comment-{{this._id}}">
-        <img src="{{this.profilePicture}}" alt="Profile Picture" width="50">
-        <p>{{{this.author.username}}}</p>
-        <p>{{formatDate this.createdAt}}</p>
-        <p>{{{this.content}}}</p>
-
-        <!-- Voting buttons -->
-        <div class="voting-container" style="display: flex; align-items: center; gap: 5px; margin: 10px 0;">
-            {{#if ../session.userId}}
-            <button class="vote-btn {{#if (eq this.userVote 1)}}voted-up{{/if}}" data-comment-id="{{this._id}}"
-                data-user-id="{{../session.userId}}" data-vote-type="upvote" style="color: green;">
-                ↑
-            </button>
-
-            <span class="vote-score" id="score-{{this._id}}"
-                style="font-weight: bold; min-width: 20px; text-align: center;">
-                {{this.score}}
-            </span>
-
-            <button class="vote-btn {{#if (eq this.userVote -1)}}voted-down{{/if}}" data-comment-id="{{this._id}}"
-                data-user-id="{{../session.userId}}" data-vote-type="downvote" style="color: red;">
-                ↓
-            </button>
-            {{else}}
-            <button disabled>↑</button>
-            <span style="font-weight: bold; min-width: 20px; text-align: center;">
-                {{this.score}}
-            </span>
-            <button disabled>↓</button>
-            {{/if}}
-        </div>
-
-        <!-- Show acceptance status -->
-        {{#if this.isAccepted}}
-        <p style="color: green;">✓ Accepted Answer</p>
-        {{/if}}
-
-        <!-- Accept Answer Button (only shown to question owner) -->
-        {{#if ../isOwner}}
-        <form method="POST" action="/questions/{{../question._id}}/accept/{{this._id}}?_method=PUT">
-            <button type="submit" {{#if this.isAccepted}}disabled style="background-color: #4CAF50;" {{/if}}>
-                {{#if this.isAccepted}}✓ Accepted{{else}}Accept Answer{{/if}}
-            </button>
-        </form>
-        {{/if}}
-
-        <!-- Edit/Delete Buttons (only shown to comment owner) -->
-        {{#if this.isCommentOwner}}
-        <button class="delete-btn" data-comment-id="{{this._id}}">Delete Comment</button><br>
-        <a href="/comments/{{this._id}}/edit">Edit</a>
-        {{/if}}
-
-        <br>
-        <!-- Sub-comment form -->
-        {{#if ../session.userId}}
-        <div style="margin-top: 10px; padding-left: 20px;">
-            <form action="/subComments/{{this._id}}/{{../question._id}}" method="post">
-                <textarea name="content" placeholder="Write a reply..." rows="2" required style="width: 90%;"></textarea>
-                <br>
-                <button type="submit" style="margin-top: 5px;">Reply</button>
-            </form>
-        </div>
-        {{/if}}
-
-        {{#each this.subComments}}
-            <div style="margin-left: 30px; padding: 5px; border-left: 2px solid #ccc;">
-                <img src="{{this.author.profilePicture}}" alt="Profile Picture" width="30">
-                <strong>{{this.author.username}}</strong>
-                <p>{{formatDate this.createdAt}}</p>
-                <p>{{{this.content}}}</p>
+  <section>
+    <ul class="space-y-6">
+      {{#each comments}}
+        <li class="bg-gray-50 rounded-2xl p-5 shadow-sm" id="comment-{{this._id}}">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center space-x-3">
+              <img class="w-10 h-10 rounded-full" src="{{this.profilePicture}}" alt="Profile Picture">
+              <div>
+                <p class="font-semibold">{{this.author.username}}</p>
+                <p class="text-sm text-gray-500">{{formatDate this.createdAt}}</p>
+              </div>
             </div>
-        {{/each}}
+            {{#if this.isAccepted}}<span class="text-green-500 font-bold">✓ Accepted</span>{{/if}}
+          </div>
 
-        <br><br>
-    </li>
-    {{/each}}
-</ul>
+          <p class="text-gray-700 mb-4">{{{this.content}}}</p>
+          <div class="flex items-center space-x-4 text-sm">
+            <span class="font-semibold text-lg" id="score-{{this._id}}">Score: {{this.score}}</span>
+            {{#if ../session.userId}}
+              <button class="vote-btn text-lg {{#if (eq this.userVote 1)}}voted-up{{/if}}" data-comment-id="{{this._id}}" data-user-id="{{../session.userId}}" data-vote-type="upvote">↑</button>
+              <button class="vote-btn text-lg {{#if (eq this.userVote -1)}}voted-down{{/if}}" data-comment-id="{{this._id}}" data-user-id="{{../session.userId}}" data-vote-type="downvote">↓</button>
+            {{/if}}
+          </div>
+
+          {{#if ../isOwner}}
+            <form method="POST" action="/questions/{{../question._id}}/accept/{{this._id}}?_method=PUT" class="mt-4">
+              <button class="px-4 py-2 rounded-lg {{#if this.isAccepted}}bg-green-500 text-white{{else}}bg-gray-200 text-gray-700 hover:bg-gray-300{{/if}} transition" type="submit">
+                {{#if this.isAccepted}}Accepted{{else}}Accept Answer{{/if}}
+              </button>
+            </form>
+          {{/if}}
+
+          {{#if this.isCommentOwner}}
+            <div class="mt-4 space-x-2">
+              <button class="px-3 py-1 bg-red-400 text-white rounded-lg hover:bg-red-500 transition delete-btn" data-comment-id="{{this._id}}">Delete</button>
+              <a href="/comments/{{this._id}}/edit" class="px-3 py-1 bg-yellow-400 text-white rounded-lg hover:bg-yellow-500 transition">Edit</a>
+            </div>
+          {{/if}}
+
+          {{#if ../session.userId}}
+            <div class="mt-4 pl-8">
+              <form action="/subComments/{{this._id}}/{{../question._id}}" method="post" class="space-y-2">
+                <textarea name="content" rows="2" class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-200" placeholder="Write a reply..." required></textarea>
+                <button class="px-3 py-1 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition" type="submit">Reply</button>
+              </form>
+            </div>
+          {{/if}}
+
+          {{#each this.subComments}}
+            <div class="mt-4 ml-8 p-4 bg-white rounded-lg shadow-sm border-l-4 border-indigo-200">
+              <div class="flex items-center mb-2">
+                <img class="w-8 h-8 rounded-full" src="{{this.author.profilePicture}}" alt="Profile Picture">
+                <p class="ml-3 font-medium">{{this.author.username}}</p>
+              </div>
+              <p class="text-sm text-gray-500 mb-2">{{formatDate this.createdAt}}</p>
+              <p class="text-gray-700">{{{this.content}}}</p>
+            </div>
+          {{/each}}
+        </li>
+      {{/each}}
+    </ul>
+  </section>
+
+  <script src="/javascripts/voting.js"></script>
+    <script src="/javascripts/deleteComment.js"></script>
+</article>
 
 
-<script src="/javascripts/voting.js"></script>
-<script src="/javascripts/deleteComment.js"></script>
+
+
+

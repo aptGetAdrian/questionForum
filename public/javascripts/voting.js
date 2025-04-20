@@ -3,12 +3,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const styleElement = document.createElement('style');
     styleElement.textContent = `
       .voted-up { 
-        background-color: #e6f7e6 !important; 
+        background-color:rgb(21, 135, 21) !important; 
         font-weight: bold !important;
+        color: white;
+        border-radius: 25px;
       }
       .voted-down { 
-        background-color: #ffebeb !important;
+        background-color:rgb(132, 59, 59) !important;
+        color: white;
         font-weight: bold !important; 
+        border-radius: 25px;
       }
     `;
     document.head.appendChild(styleElement);
@@ -34,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Vote response data:', data); // Debug output
             
             const scoreElement = document.getElementById(`score-${commentId}`);
-            scoreElement.textContent = data.score;
+            scoreElement.textContent = "Score: " + data.score;
             
             // Update button classes
             const upvoteBtn = document.querySelector(

@@ -1,35 +1,38 @@
-<h1>Profil uporabnika</h1>
-<h2>Ime: </h2>
-<h3>{{user.username}}</h3>
-<h2>Mail:</h2>
-<h3>{{user.email}}</h3>
+<div class="container mx-auto px-4 py-8 bg-white rounded-2xl shadow-md max-w-2xl">
+  <h1 class="text-3xl font-bold mb-4">Profil uporabnika</h1>
+  <div class="flex space-x-8 mb-8">
+    <div>
+      <img class="w-32 h-32 rounded-full shadow-md" src="{{user.profilePicture}}" alt="Profile Picture">
+      <form action="/users/setPicture" method="POST" enctype="multipart/form-data" class="mt-4 space-y-2">
+        <input type="file" name="profilePicture" accept="image/*" required
+          class="block w-full text-sm text-gray-500 file:mt-2 file:border file:border-gray-300 file:rounded-lg file:px-4 file:py-2 focus:outline-none">
+        <button type="submit"
+          class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Upload</button>
+      </form>
+      <a href="logout" class="block mt-4 text-red-500 hover:underline">Odjava</a>
+    </div>
+    <div class="flex-1">
+      <ul class="space-y-2 text-gray-700">
+        <li>Število odgovorov: <span class="font-semibold">{{numComments}}</span></li>
+        <li>Število vprašanj: <span class="font-semibold">{{numQuestions}}</span></li>
+        <li>Karma: <span class="font-semibold">{{totalScore}}</span></li>
+        <li>Število sprejetih odgovorov: <span class="font-semibold">{{numAcceptedComments}}</span></li>
+        <li>Povprečna ocena odgovorov: <span class="font-semibold">{{averageScore}}</span></li>
+      </ul>
+    </div>
+  </div>
 
-<h2>Profile Picture</h2>
-<img src="{{user.profilePicture}}" alt="Profile Picture" width="150">
-<form action="/users/setPicture" method="POST" enctype="multipart/form-data">
-    <input type="file" name="profilePicture" accept="image/*" required>
-    <button type="submit">Upload</button>
-</form>
-
-<br><a type="button" href="logout">Odjava </a>
-
-<h2>Statistika:</h2>
-<ul>
-    <p>Število odgovorov: {{numComments}}</p>
-    <p>Število vprašanj: {{numQuestions}}</p>
-    <p>Karma: {{totalScore}}</p>
-    <p>Število sprejetih odgovorov: {{numAcceptedComments}}</p>
-    <p>Povprečna ocena odgovorov: {{averageScore}}</p>
-</ul>
+  <div>
+    <h2 class="text-2xl font-semibold mb-4">Questions:</h2>
+    <ul class="space-y-3">
+      {{#each questions}}
+        <li><a href="/questions/{{this._id}}" class="text-lg hover:text-indigo-600">{{this.title}}</a></li>
+      {{/each}}
+    </ul>
+  </div>
+</div>
 
 
 
 
-<h2>Questions:</h2>
-<ul>
-    {{#each questions}}
-    <li>
-        <a href="/questions/{{this._id}}">{{this.title}}</a>
-    </li>
-    {{/each}}
-</ul>
+

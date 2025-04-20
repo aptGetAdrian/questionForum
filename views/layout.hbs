@@ -1,24 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="bg-gray-50 text-gray-800">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{title}}</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   </head>
-  <body>
-    <nav>
-      <ul>
-        <li><a href='/'>Domov</a></li>
-        {{#if session.userId}}
-        <li><a href='/users/userProfile'>Profil</a></li>
-        <li><a href='/photos/publish'>Objavi sliko</a></li>
-        <li><a href='/questions/new'>Objavi vprašanje</a></li>
-        <li><a href='/users/logout'>Odjava</a></li>
-        {{else}}
-        <li><a href='/users/login'>Prijava</a></li>
-        <li><a href='/users/register'>Registracija</a></li>
-        {{/if}}
-      </ul>
+  <body class="flex flex-col min-h-screen">
+    <nav class="bg-white shadow-md">
+      <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <a href="/" class="text-2xl font-bold text-indigo-600 hover:text-indigo-800">Moja Stran</a>
+        <ul class="flex space-x-6">
+          <li><a href="/" class="hover:text-indigo-600">Domov</a></li>
+          {{#if session.userId}}
+            <li><a href="/users/userProfile" class="hover:text-indigo-600">Profil</a></li>
+            <li><a href="/photos/publish" class="hover:text-indigo-600">Objavi sliko</a></li>
+            <li><a href="/questions/new" class="hover:text-indigo-600">Objavi vprašanje</a></li>
+            <li><a href="/users/logout" class="hover:text-indigo-600">Odjava</a></li>
+          {{else}}
+            <li><a href="/users/login" class="hover:text-indigo-600">Prijava</a></li>
+            <li><a href="/users/register" class="hover:text-indigo-600">Registracija</a></li>
+          {{/if}}
+        </ul>
+      </div>
     </nav>
-    {{{body}}}
+
+    <main class="container mx-auto flex-grow px-4 py-8">
+      {{{body}}}
+    </main>
+
+    <footer class="bg-white border-t mt-auto">
+      <div class="container mx-auto px-4 py-6 text-center text-sm text-gray-500">
+        <p>&copy; 2023 Moja Stran. Vse pravice pridržane.</p>
+        <p>Kontakt: <a href="mailto:info@mojastran.si" class="hover:text-indigo-600">info@mojastran.si</a></p>
+      </div>
+    </footer>
   </body>
 </html>

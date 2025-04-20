@@ -12,6 +12,8 @@ router.get('/', async function(req, res, next) {
       .exec();
     
     res.render('index', { 
+      title: 'Your Page Title',
+      currentYear: new Date().getFullYear(),
       title: 'Home',
       recentQuestions: recentQuestions
     });

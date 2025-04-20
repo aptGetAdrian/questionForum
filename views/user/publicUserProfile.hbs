@@ -1,0 +1,68 @@
+<div class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold text-primary-700 mb-6 border-b border-gray-200 pb-3">User profile</h1>
+  
+  <div class="grid md:grid-cols-3 gap-8">
+    <!-- Left column: Profile picture and upload -->
+    <div class="flex flex-col items-center justify-center h-full space-y-4 md:border-r md:border-gray-200 md:pr-6">
+        <h2 class="text-xl font-semibold text-gray-700">Profile Picture</h2>
+        <div class="relative">
+            <img src="{{user.profilePicture}}" alt="Profile Picture" class="w-40 h-40 object-cover rounded-full border-4 border-primary-300 shadow-md">
+        </div>
+        </div>
+
+    <!-- Middle column: User info -->
+    <div class="space-y-6">
+      <div>
+        <h2 class="text-lg font-semibold text-gray-600">Name:</h2>
+        <p class="text-l font-bold text-gray-800 break-words truncate max-w-full">{{user.username}}</p>
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold text-gray-600">E-mail:</h2>
+        <p class="text-l font-bold text-gray-800 break-words truncate max-w-full">{{user.email}}</p>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h2 class="text-xl font-semibold text-primary-700 mb-3">User stats:</h2>
+        <ul class="space-y-2">
+          <li class="flex justify-between">
+            <span class="text-gray-600">Number of answers:</span>
+            <span class="font-semibold">{{numComments}}</span>
+          </li>
+          <li class="flex justify-between">
+            <span class="text-gray-600">Number of questions:</span>
+            <span class="font-semibold">{{numQuestions}}</span>
+          </li>
+          <li class="flex justify-between">
+            <span class="text-gray-600">Karma:</span>
+            <span class="font-semibold">{{totalScore}}</span>
+          </li>
+          <li class="flex justify-between">
+            <span class="text-gray-600">Accepted answers:</span>
+            <span class="font-semibold">{{numAcceptedComments}}</span>
+          </li>
+          <li class="flex justify-between">
+            <span class="text-gray-600">Average answer score:</span>
+            <span class="font-semibold">{{averageScore}}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Right column: Questions -->
+    <div class="md:border-l md:border-gray-200 md:pl-6">
+      <h2 class="text-xl font-semibold text-primary-700 mb-3">Questions:</h2>
+      {{#if questions.length}}
+        <div class="max-h-85 overflow-y-auto pr-2"> <!-- new wrapper div -->
+          <ul class="space-y-2">
+            {{#each questions}}
+            <li class="bg-gray-50 hover:bg-gray-100 p-3 rounded-lg transition">
+              <a href="/questions/{{this._id}}" class="text-primary-600 hover:text-primary-800 font-medium block">{{this.title}}</a>
+            </li>
+            {{/each}}
+          </ul>
+        </div>
+      {{else}}
+        <p class="text-gray-500 italic">No questions yet.</p>
+      {{/if}}
+    </div>
+  </div>
+</div>

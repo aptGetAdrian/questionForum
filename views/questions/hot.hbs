@@ -1,0 +1,15 @@
+<div class="container mx-auto py-8">
+  <h2 class="text-3xl font-bold mb-6">Hot questions</h2>
+  {{#if hotQuestions.length}}
+    <ul class="space-y-4">
+      {{#each hotQuestions}}
+        <li class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
+          <a href="/questions/{{this._id}}" class="text-lg font-semibold text-primary-800">{{this.title}}</a>
+          <span class="text-sm text-gray-500">Score: {{this.score}}</span>
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <p class="text-gray-600">No question is currently hot. Spice it up 🥵</p>
+  {{/if}}
+</div>

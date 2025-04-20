@@ -28,6 +28,10 @@ router.post('/:id/upvote/:id3', requiresLogin, commentsController.upvote);
 //POST create new comment
 router.delete('/:id', requiresLogin, commentsController.deleteIndividual);
 
+
+router.get('/:id/edit/:questionId', requiresLogin, commentsController.showEditForm);
+router.put('/:id/update/:questionId', requiresLogin, commentsController.updateComment);
+
 //
 //// GET edit form for question
 //router.get('/:id/edit', commentsController.showEditForm);

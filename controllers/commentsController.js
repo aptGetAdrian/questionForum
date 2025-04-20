@@ -1,4 +1,5 @@
 const Comment = require('../models/commentsModel.js');
+const Question = require('../models/questionsModel.js');
 const marked = require('marked'); // Don't forget to npm install marked
 
 module.exports = {
@@ -20,13 +21,19 @@ module.exports = {
                 author: req.session.userId,
                 question: req.params.id  
             });
+
+            await Question.findByIdAndUpdate(req.params.id, {
+                $set: { lastActivity: new Date() }
+              });
     
             return res.redirect(`/questions/${req.params.id}`);
     
         } catch (err) {
-            console.error("[ERROR] Comment creation failed:", err.message);
-            // You might want to redirect back with error message
-            return res.redirect(`/questions/${req.params.id}?error=${encodeURIComponent(err.message)}`);
+            const error2 = "500: Error posting comment";
+                return res.render('error', { 
+                    error2,
+                    error: err
+                });
         }
     },
 
@@ -68,8 +75,11 @@ module.exports = {
                 return res.redirect('back');
             }
         } catch (error) {
-            console.error(error);
-            res.status(500).send('Server Error');
+            const error2 = "500: Server error";
+                return res.render('error', { 
+                    error2,
+                    error
+                });
         }
     },
     
@@ -113,8 +123,11 @@ module.exports = {
                 return res.redirect('back');
             }
         } catch (error) {
-            console.error(error);
-            res.status(500).send('Server Error');
+            const error2 = "500: Server error";
+                return res.render('error', { 
+                    error2,
+                    error
+                });
         }
     },
 
@@ -123,12 +136,46 @@ module.exports = {
             await Comment.findByIdAndDelete(req.params.id);
             res.status(200).json({ message: 'Comment deleted successfully' });
         } catch (error) {
-            res.status(500).json({ error: 'An error occurred while deleting the comment' });
+            const error2 = "500: Server error";
+                return res.render('error', { 
+                    error2,
+                    error
+                });
         }
 
-    }
+    },
+
+    updateComment: async (req, res) => {
+            try {
+                
+                const updatedComment = await Comment.findByIdAndUpdate(
+                    req.params.id,
+                    { ...req.body, isEdited: true },
+                    { new: true }
+                );
+
+                res.redirect(`/questions/${req.params.questionId}`);
+
+            } catch (err) {
 
 
+                res.status(400).render('questions/editComment', { 
+                error: err.message,
+                question: req.body
+            });
+            }
+        },
+
+    showEditForm: async (req, res) => {
+            try {
+                const question = await Question.findById(req.params.questionId);
+                const comment = await Comment.findById(req.params.id);
+                console.log("tu smo");
+                res.render('questions/editComment', { question, comment });
+            } catch (err) {
+                res.status(404).send('Comment not found');
+            }
+        },
 
 
 };

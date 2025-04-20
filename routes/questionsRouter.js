@@ -18,11 +18,15 @@ router.get('/list', questionsController.list);
 // GET form to create new question
 router.get('/new', requiresLogin, questionsController.showCreateForm);
 
+// POST create new question
+router.post('/', requiresLogin, questionsController.create);
+
+router.get('/hot', questionsController.hotQuestions);
+
 // GET specific question
 router.get('/:id', questionsController.show);
 
-// POST create new question
-router.post('/', requiresLogin, questionsController.create);
+
 
 // GET edit form for question
 router.get('/:id/edit', questionsController.showEditForm);

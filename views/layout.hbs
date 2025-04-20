@@ -1,39 +1,126 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-gray-50 text-gray-800">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{title}}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: '#f0f9ff',
+                100: '#e0f4fe',
+                200: '#b9e7fd',
+                300: '#7dd4fc',
+                400: '#38b7f8',
+                500: '#0e9de9',
+                600: '#0280cc',
+                700: '#0367a6',
+                800: '#075785',
+                900: '#0a496f',
+                950: '#062f49',
+              },
+              secondary: {
+                50: '#fcf8f3',
+                100: '#f8eee2',
+                200: '#f0dac0',
+                300: '#e5bc92',
+                400: '#d89662',
+                500: '#ce7c43',
+                600: '#c16735',
+                700: '#a04f2d',
+                800: '#82412a',
+                900: '#6b3627',
+                950: '#391a12',
+              },
+            }
+          }
+        }
+      }
+    </script>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <style>
+      /* Additional custom styles */
+      @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap');
+      body {
+        font-family: 'Nunito', sans-serif;
+      }
+    </style>
   </head>
-  <body class="flex flex-col min-h-screen">
-    <nav class="bg-white shadow-md">
-      <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-        <a href="/" class="text-2xl font-bold text-indigo-600 hover:text-indigo-800">Moja Stran</a>
-        <ul class="flex space-x-6">
-          <li><a href="/" class="hover:text-indigo-600">Domov</a></li>
-          {{#if session.userId}}
-            <li><a href="/users/userProfile" class="hover:text-indigo-600">Profil</a></li>
-            <li><a href="/photos/publish" class="hover:text-indigo-600">Objavi sliko</a></li>
-            <li><a href="/questions/new" class="hover:text-indigo-600">Objavi vprašanje</a></li>
-            <li><a href="/users/logout" class="hover:text-indigo-600">Odjava</a></li>
-          {{else}}
-            <li><a href="/users/login" class="hover:text-indigo-600">Prijava</a></li>
-            <li><a href="/users/register" class="hover:text-indigo-600">Registracija</a></li>
-          {{/if}}
-        </ul>
+  <body class="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800">
+    <nav class="bg-primary-700 text-white shadow-lg">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex justify-between items-center px-4">
+          <a href="/" class="text-2xl font-bold tracking-tight">CommunityQ</a>
+          <ul class="hidden md:flex space-x-8 items-center pl-8">
+            <li><a href='/' class="hover:text-primary-300 transition">Home</a></li>
+            <li><a href="/questions/hot" class="hover:text-primary-300 transition">Hot questions</a></li>
+            <li><a href='/questions/list' class="block hover:text-primary-300 transition">All questions</a></li>
+            {{#if session.userId}}
+            <li><a href='/users/userProfile' class="hover:text-primary-300 transition">Profile</a></li>
+            <li><a href='/questions/new' class="hover:text-primary-300 transition">Ask quesiton</a></li>
+            <li><a href='/users/logout' class="hover:text-primary-300 transition">Logout</a></li>
+            {{else}}
+            <li><a href='/users/login' class="hover:text-primary-300 transition">Login</a></li>
+            <li><a href='/users/register' class="bg-secondary-500 hover:bg-secondary-600 px-4 py-2 rounded-lg transition">Registracija</a></li>
+            {{/if}}
+          </ul>
+          
+          <!-- Mobile menu button -->
+          <div class="md:hidden">
+            <button id="mobile-menu-button" class="text-white hover:text-primary-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden mt-4 pb-2">
+          <ul class="flex flex-col space-y-3">
+            <li><a href='/' class="block hover:text-primary-300 transition">Home</a></li>
+            <li><a href="/questions/hot" class="hover:text-primary-300 transition">Hot questions</a></li>
+            <li><a href='/questions/list' class="block hover:text-primary-300 transition">All questions</a></li>
+            {{#if session.userId}}
+            <li><a href='/users/userProfile/{{session.userId}}' class="block hover:text-primary-300 transition">Profile</a></li>
+            <li><a href='/questions/new' class="block hover:text-primary-300 transition">Ask question</a></li>
+            <li><a href='/users/logout' class="block hover:text-primary-300 transition">Logout</a></li>
+            {{else}}
+            <li><a href='/users/login' class="block hover:text-primary-300 transition">Login</a></li>
+            <li><a href='/users/register' class="block bg-secondary-500 hover:bg-secondary-600 px-4 py-2 rounded-lg transition w-fit">Registracija</a></li>
+            {{/if}}
+          </ul>
+        </div>
       </div>
     </nav>
 
-    <main class="container mx-auto flex-grow px-4 py-8">
+    <main class="container mx-auto px-4 py-8 flex-grow">
       {{{body}}}
     </main>
 
-    <footer class="bg-white border-t mt-auto">
-      <div class="container mx-auto px-4 py-6 text-center text-sm text-gray-500">
-        <p>&copy; 2023 Moja Stran. Vse pravice pridržane.</p>
-        <p>Kontakt: <a href="mailto:info@mojastran.si" class="hover:text-indigo-600">info@mojastran.si</a></p>
+    <footer class="bg-gray-900 text-gray-300 mt-auto">
+      <div class="container mx-auto px-4 py-6">
+        <div class="footer-content flex flex-col md:flex-row justify-between items-center">
+          <p>&copy; 2025 my website. All rights reserved.</p>
+          <p>Contact: info@mySite.si</p>
+        </div>
       </div>
     </footer>
+
+    <script>
+      // Mobile menu toggle
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+        });
+      }
+    </script>
   </body>
 </html>

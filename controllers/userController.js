@@ -179,7 +179,11 @@ module.exports = {
                 averageScore
             });
         } catch (error) {
-            return next(error);
+            const error2 = "500: Error creating profile";
+                return res.render('error', { 
+                    error2,
+                    error
+                });
         }
     },
 
@@ -218,10 +222,84 @@ module.exports = {
                 
                 res.redirect('/users/userProfile');
             } catch (error) {
-                console.error('Full error:', error);
-                res.status(500).send('Error updating profile picture: ' + error.message);
+                const error2 = "500: Error updating profile picture";
+                return res.render('error', { 
+                    error2,
+                    error
+                });
             }
         });
+    },
+
+    publicUserProfile: async (req, res, next) => {
+        try {
+            const user = await UserModel.findOne({ username: req.params.username}).lean();
+            const questions = await Question.find({ author: user._id }).lean();  
+            
+            const numComments = await Comment.countDocuments({ author: user._id });
+            const numQuestions = await Question.countDocuments({ author: user._id });
+            const numAcceptedComments = await Comment.countDocuments({ author: user._id, isAccepted: true });
+
+            const comments = await Comment.find({ author: user._id}).lean();
+            const totalScore = comments.reduce((sum, comment) => sum + (comment.score || 0), 0);
+            var averageScore = parseFloat((totalScore / numComments).toFixed(1));
+            if (isNaN(averageScore)) {
+                averageScore = 0;
+            }
+    
+            if (!user) {
+                const err = new Error('Not authorized, go back!');
+                err.status = 400;
+                return next(err);
+            }
+
+            if (req.session && req.session.userId) {
+                if (req.session.userId == user._id.toString()) {
+                    return res.render('user/userProfile', { 
+                        user,
+                        questions,
+                        numComments,
+                        numQuestions,
+                        totalScore,
+                        numAcceptedComments,
+                        averageScore
+                    });
+                } else {
+                    return res.render('user/publicUserProfile', { 
+                        user,
+                        questions,
+                        numComments,
+                        numQuestions,
+                        totalScore,
+                        numAcceptedComments,
+                        averageScore
+                    });
+                }
+            } else {
+                return res.render('user/publicUserProfile', { 
+                    user,
+                    questions,
+                    numComments,
+                    numQuestions,
+                    totalScore,
+                    numAcceptedComments,
+                    averageScore
+                });
+            }
+    
+            
+        } catch (error) {
+            const error2 = "403: Access denied";
+            return res.render('error', { 
+                error2,
+                error
+            });
+
+
+        }
+
+
+
     }
 
 

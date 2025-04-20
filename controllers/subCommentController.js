@@ -1,6 +1,7 @@
 const subComment = require('../models/subCommentModel.js');
 const marked = require('marked');
 const Comment = require('../models/commentsModel.js');
+const Question = require ('../models/questionsModel.js');
 
 module.exports = {
     create: async (req, res) => {
@@ -23,6 +24,11 @@ module.exports = {
                 comment:  req.params.id,
             });
 
+            await Question.findByIdAndUpdate(req.params.id2, {
+                $set: { lastActivity: new Date() }
+            });
+  
+
             await Comment.findByIdAndUpdate(req.params.id, {
                 $push: { subComments: newSubComment._id }
             });
@@ -30,9 +36,11 @@ module.exports = {
             return res.redirect(`/questions/${req.params.id2}`);
     
         } catch (err) {
-            console.error("[ERROR] Comment creation failed:", err.message);
-            // You might want to redirect back with error message
-            return res.redirect(`/questions/${req.params.id2}?error=${encodeURIComponent(err.message)}`);
+            const error2 = "500: Error posting comment";
+                return res.render('error', { 
+                    error2,
+                    error: eqq
+                });;
         }
     }
 

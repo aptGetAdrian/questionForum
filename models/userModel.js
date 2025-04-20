@@ -3,7 +3,7 @@ var bcrypt = require('bcrypt');
 var Schema   = mongoose.Schema;
 
 var userSchema = new Schema({
-	username: { type: String, required: true },
+	username: { type: String, required: true, unique: true },
 	password: { type: String, required: true },
 	email: { type: String, required: true },
 	profilePicture: { type: String, default: "/images/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg" }

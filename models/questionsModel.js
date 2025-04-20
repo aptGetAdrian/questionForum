@@ -6,7 +6,9 @@ const questionSchema = new mongoose.Schema({
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, 
     createdAt: { type: Date, default: Date.now },
     acceptedAnswer: { type: mongoose.Schema.Types.ObjectId, ref: 'Comment', default: null },
-    isEdited: { type: Boolean, default: false }
+    isEdited: { type: Boolean, default: false },
+    views: { type: Number, default: 0 },
+    lastActivity: { type: Date, default: Date.now }
 });
 
 

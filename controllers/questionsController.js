@@ -9,9 +9,13 @@ module.exports = {
     list: async (req, res) => {
         try {
         const questions = await Question.find();
-        res.render('questions/list', { questions, questionAuthorProfilePicture });
+        res.render('questions/list', { questions });
         } catch (err) {
-        res.status(500).send(err.message);
+          const error2 = "500: Trouble fetching list";
+          return res.render('error', { 
+              error2,
+              error: err
+          });
         }
     },
     
@@ -21,6 +25,12 @@ module.exports = {
             .populate('author', 'username profilePicture') // <-- populate author's username + profilePicture
             .lean();
       
+
+          await Question.findByIdAndUpdate(req.params.id, {
+              $inc: { views: 1 },
+              $set: { lastActivity: new Date() }
+          });
+
           const comments = await Comment.find({ question: req.params.id })
             .populate('author', 'username profilePicture')
             .populate({
@@ -82,7 +92,11 @@ module.exports = {
           });
       
         } catch (err) {
-          next(err);
+          const error2 = "500: Tbh i've no idea what the issue is";
+                return res.render('error', { 
+                    error2,
+                    error: err
+                });
         }
       },
 
@@ -145,12 +159,12 @@ module.exports = {
 
     update: async (req, res) => {
         try {
-        const updatedQuestion = await Question.findByIdAndUpdate(
+          const updatedQuestion = await Question.findByIdAndUpdate(
             req.params.id,
-            req.body,
-            { new: true }
-        );
-        res.redirect(`/questions/${updatedQuestion._id}`);
+            { ...req.body, isEdited: true }, 
+            { new: true } 
+          );
+          res.redirect(`/questions/${updatedQuestion._id}`);
         } catch (err) {
         res.status(400).render('questions/edit', { 
             error: err.message,
@@ -202,7 +216,46 @@ module.exports = {
             res.redirect(`/questions/${questionId}`);
             //res.status(200).json({ message: "Answer accepted successfully.", acceptedAnswer: answerId });
         } catch (err) {
-            res.status(500).json({ error: "Server error: " + err.message });
-        }
+            const error2 = "500: Server error";
+            return res.render('error', { 
+                error2,
+                error: err
+            });
+          }
     },
+
+    hotQuestions: async (req, res) => {
+      try {
+        const oneDayAgo = new Date(Date.now() - 24*60*60*1000);
+        const hotQuestions = await Question.aggregate([ 
+          { $match: { lastActivity: { $gte: oneDayAgo } } },
+          { $lookup: {
+              from: 'comments',
+              let: { qId: '$_id' },
+              pipeline: [
+                { $match: {
+                    $expr: { $eq: ['$question', '$$qId'] },
+                    createdAt: { $gte: oneDayAgo }
+                } }
+              ],
+              as: 'recentComments'
+          }},
+          { $addFields: {
+              replies: { $size: '$recentComments' },
+              score: { $add: ['$views', { $multiply: [2, { $size: '$recentComments' }] }] }
+              // tu lahko α = 2 ali karkoli drugega
+          }},
+          { $sort: { score: -1 } },
+          { $limit: 10 }  // prikažeš top 10
+         ]);
+        res.render('questions/hot', { hotQuestions });
+      } catch (err) {
+        const error2 = "500: Error creating profile";
+                return res.render('error', { 
+                    error2,
+                    error: err
+                });
+      }
+
+    }
 };

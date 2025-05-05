@@ -50,7 +50,6 @@
   <h3 class="text-xl font-semibold text-gray-800 mb-4">Write an answer:</h3>
 
   {{#if session.userId}}
-    <!-- Logged-in user: Active form -->
     <form action="/comments/{{question._id}}" method="post" class="space-y-4">
       <div>
         <textarea name="content" placeholder="Your answer" required
@@ -61,7 +60,6 @@
         class="bg-secondary-500 hover:bg-secondary-600 text-white px-6 py-2 rounded-md transition">Submit</button>
     </form>
   {{else}}
-    <!-- Guest user: Disabled form -->
     <div class="space-y-4">
       <textarea placeholder="Please log in to write an answer" disabled
         class="w-full px-4 py-2 rounded-md border border-gray-300 bg-gray-100 text-gray-500 h-32 cursor-not-allowed"></textarea>
@@ -113,7 +111,7 @@
           {{/if}}
         <div class="flex flex-wrap items-center gap-3 mt-4">
           
-          <!-- Voting buttons -->
+
           <div class="voting-container flex items-center gap-1">
             {{#if ../session.userId}}
             <button class="vote-btn {{#if (eq this.userVote 1)}}bg-green-100{{/if}} h-8 w-8 rounded flex items-center justify-center hover:bg-green-50 transition" data-comment-id="{{this._id}}" data-user-id="{{../session.userId}}" data-vote-type="upvote">
@@ -146,7 +144,7 @@
             {{/if}}
           </div>
 
-          <!-- Accept Answer Button (only shown to question owner) -->
+
           {{#if ../isOwner}}
           <form method="POST" action="/questions/{{../question._id}}/accept/{{this._id}}?_method=PUT">
             <button type="submit" class="{{#if this.isAccepted}}bg-green-500{{else}}bg-green-600 hover:bg-green-700{{/if}} text-white px-3 py-1 rounded-full text-sm font-medium flex items-center transition" {{#if this.isAccepted}}disabled{{/if}}>
@@ -158,7 +156,7 @@
           </form>
           {{/if}}
 
-          <!-- Edit/Delete Buttons (only shown to comment owner) -->
+
           {{#if this.isCommentOwner}}
           <div class="flex gap-2">
             <button class="delete-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-medium flex items-center transition" data-comment-id="{{this._id}}">
@@ -178,7 +176,7 @@
         </div>
       </div>
 
-      <!-- Sub-comment form -->
+
       {{#if ../session.userId}}
       <div class="bg-gray-50 p-4 border-t border-gray-100">
         <form action="/subComments/{{this._id}}/{{../question._id}}" method="post" class="space-y-3">
@@ -188,7 +186,6 @@
       </div>
       {{/if}}
 
-      <!-- Sub-comments -->
       {{#each this.subComments}}
       <div class="border-t border-gray-100 bg-gray-50 p-4 pl-8">
         <div class="flex items-start">

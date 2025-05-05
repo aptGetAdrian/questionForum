@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Add CSS styles for voted buttons with !important
     const styleElement = document.createElement('style');
     styleElement.textContent = `
       .voted-up { 
@@ -35,12 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
           
           if (response.ok) {
             const data = await response.json();
-            console.log('Vote response data:', data); // Debug output
+            console.log('Vote response data:', data); 
             
             const scoreElement = document.getElementById(`score-${commentId}`);
             scoreElement.textContent = "Score: " + data.score;
             
-            // Update button classes
             const upvoteBtn = document.querySelector(
               `.vote-btn[data-comment-id="${commentId}"][data-vote-type="upvote"]`
             );
@@ -48,11 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
               `.vote-btn[data-comment-id="${commentId}"][data-vote-type="downvote"]`
             );
             
-            // Remove existing vote classes
             upvoteBtn.classList.remove('voted-up');
             downvoteBtn.classList.remove('voted-down');
             
-            // Add class based on new vote
             if (data.userVote === 1) {
               upvoteBtn.classList.add('voted-up');
             } else if (data.userVote === -1) {

@@ -1,6 +1,6 @@
 const Comment = require('../models/commentsModel.js');
 const Question = require('../models/questionsModel.js');
-const marked = require('marked'); // Don't forget to npm install marked
+const marked = require('marked'); 
 
 module.exports = {
     create: async (req, res) => {
@@ -44,7 +44,7 @@ module.exports = {
         try {
             const comment = await Comment.findById(commentId);
             const voter = comment.voters.find(v => v.userId.equals(userId));
-            let userVote = 0; // Default value
+            let userVote = 0; 
     
             if (!voter) {
                 comment.voters.push({ userId, vote: 1 });
@@ -69,7 +69,7 @@ module.exports = {
             if (req.xhr) {
                 return res.json({ 
                     score: comment.score,
-                    userVote: userVote // Add the user's current vote status
+                    userVote: userVote 
                 });
             } else {
                 return res.redirect('back');
@@ -90,10 +90,9 @@ module.exports = {
         try {
             const comment = await Comment.findById(commentId);
             const voter = comment.voters.find(v => v.userId.equals(userId));
-            let userVote = 0; // Default value
+            let userVote = 0; 
     
             if (!voter) {
-                // User hasn't voted yet; add a downvote
                 comment.voters.push({ userId, vote: -1 });
                 comment.score -= 1;
                 userVote = -1;
@@ -113,11 +112,10 @@ module.exports = {
     
             await comment.save();
     
-            // Check if the request is an AJAX request
             if (req.xhr) {
                 return res.json({ 
                     score: comment.score,
-                    userVote: userVote // Add the user's current vote status
+                    userVote: userVote 
                 });
             } else {
                 return res.redirect('back');

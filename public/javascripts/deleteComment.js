@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     deleteButtons.forEach(button => {
         button.addEventListener('click', async (event) => {
-            event.preventDefault(); // Prevent default form submission if inside a form
+            event.preventDefault();
             const commentId = button.getAttribute('data-comment-id');
 
             try {
@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.ok) {
-                    // Remove the comment element from the DOM
                     const commentElement = document.getElementById(`comment-${commentId}`);
                     if (commentElement) {
                         commentElement.remove();

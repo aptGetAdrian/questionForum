@@ -11,9 +11,6 @@ const commentsModel = require('../models/commentsModel.js');
  */
 module.exports = {
 
-    /**
-     * userController.list()
-     */
     list: function (req, res) {
         UserModel.find(function (err, users) {
             if (err) {
@@ -27,9 +24,7 @@ module.exports = {
         });
     },
 
-    /**
-     * userController.show()
-     */
+
     show: function (req, res) {
         var id = req.params.id;
 
@@ -51,9 +46,6 @@ module.exports = {
         });
     },
 
-    /**
-     * userController.create()
-     */
     create: function (req, res) {
         var user = new UserModel({
 			username : req.body.username,
@@ -74,9 +66,7 @@ module.exports = {
         });
     },
 
-    /**
-     * userController.update()
-     */
+
     update: function (req, res) {
         var id = req.params.id;
 
@@ -111,9 +101,7 @@ module.exports = {
         });
     },
 
-    /**
-     * userController.remove()
-     */
+
     remove: function (req, res) {
         var id = req.params.id;
 

@@ -1,17 +1,13 @@
-// seed.js
-// Script to generate mock data for Users, Questions, Comments, and SubComments
-
 const mongoose = require('mongoose');
 const { faker } = require('@faker-js/faker');
 
-// Models
+
 const User = require('./models/userModel.js');
 const Question = require('./models/questionsModel.js');
 const Comment = require('./models/commentsModel.js');
 const SubComment = require('./models/subCommentModel.js');
 
-// Configuration
-const MONGO_URI = 'mongodb://127.0.0.1/vaja3';
+const MONGO_URI = 'mongodb://127.0.0.1/questionsForum';
 const NUM_USERS = 50;
 const NUM_QUESTIONS = 100;
 const MAX_COMMENTS_PER_QUESTION = 10;
@@ -24,13 +20,11 @@ async function seed() {
   });
   console.log('Connected to MongoDB');
 
-  // Clear existing data
   await User.deleteMany({});
   await Question.deleteMany({});
   await Comment.deleteMany({});
   await SubComment.deleteMany({});
 
-  // Create users
   const users = [];
   for (let i = 0; i < NUM_USERS; i++) {
     const user = new User({
@@ -43,7 +37,6 @@ async function seed() {
   }
   console.log(`Created ${users.length} users`);
 
-  // Create questions
   const questions = [];
   for (let i = 0; i < NUM_QUESTIONS; i++) {
     const author = faker.helpers.arrayElement(users);
@@ -59,7 +52,6 @@ async function seed() {
   }
   console.log(`Created ${questions.length} questions`);
 
-  // Create comments and subcomments
   let totalComments = 0;
   let totalSubComments = 0;
 
@@ -78,7 +70,6 @@ async function seed() {
       const savedComment = await comment.save();
       totalComments++;
 
-      // SubComments
       const numSub = faker.number.int({ min: 0, max: MAX_SUBCOMMENTS_PER_COMMENT });
       for (let k = 0; k < numSub; k++) {
         const subAuthor = faker.helpers.arrayElement(users);
